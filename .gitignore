@@ -1,0 +1,20 @@
+# Executaveis e arquivos compilados
+*.exe
+*.o
+*.obj
+*.out
+
+# Pastas de compilacao
+build/
+bin/
+
+# Arquivos temporarios
+*.log
+*.tmp
+
+# Configuracoes locais do VS Code
+.vscode/
+
+# Salvamentos e rankings locais
+data/saves/
+data/ranking.txt
