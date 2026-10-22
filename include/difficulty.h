@@ -21,8 +21,8 @@ typedef struct {
 
 // Funções do sistema de Dificuldade
 
-void showDifficulty(); //Imprime o menu de Dificuldades no Terminal
-difficulty selectDiff(); //Responsavel por receber e validar a entrada
+difficulty showDifficulty(); //Imprime o menu de Dificuldades no Terminal
+difficulty difficultyLevel(char data[]); //Responsavel por receber e validar a entrada
 gameConfig getGameConf(difficulty level); //Recebe a dificuldade e retorna e estrutura contendo as configurações
 
 #endif

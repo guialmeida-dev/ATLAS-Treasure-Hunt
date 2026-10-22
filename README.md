@@ -17,7 +17,7 @@
 | Tema | J4 — Caça ao Tesouro |
 | Linguagem | C |
 | Interface | Terminal (CLI) |
-| Versão | 0.1 — Desenvolvimento inicial |
+| Versão | 0.2 — Integração inicial das dificuldades |
 | Status | Em desenvolvimento |
 
 O ATLAS é um projeto acadêmico desenvolvido por quatro estudantes de Ciência da Computação da FACAPE.
@@ -56,55 +56,29 @@ O jogo será executado no terminal, sem movimentação de personagem pelo mapa.
 
 ## 3. Equipe de desenvolvimento
 
-O projeto será desenvolvido colaborativamente por quatro integrantes.
+O ATLAS é desenvolvido colaborativamente pelos quatro integrantes abaixo, com responsabilidade compartilhada pela qualidade do projeto.
 
-| Nº | Integrante | Identificação |
-|---|---|---|
-| 1 | **Guilherme de Almeida** | Responsável pela estrutura e implementação inicial |
-| 2 | Guilherme Arthur | Integrante |
-| 3 | Marcio | Nome completo pendente |
-| 4 | Enzo | Nome completo pendente |
+| Integrante | Participação |
+|---|---|
+| Guilherme de Almeida | Equipe de desenvolvimento |
+| Guilherme Arthur | Equipe de desenvolvimento |
+| Marcio | Equipe de desenvolvimento — nome completo pendente |
+| Enzo | Equipe de desenvolvimento — nome completo pendente |
 
-As responsabilidades futuras serão definidas conforme a distribuição de tarefas entre os integrantes.
+As contribuições efetivamente realizadas são registradas por etapa no histórico abaixo e nos commits, sem estabelecer hierarquia entre os integrantes.
 
-### 3.1. Desenvolvimento inicial
+### 3.1. Histórico de contribuições
 
-**Versão:** 0.1  
-**Data de referência:** 21/10/2026  
-**Responsável:** Guilherme de Almeida  
-**Marco:** Primeiro commit do projeto
+| Data | Etapa | Atividades registradas | Responsável pela etapa |
+|---|---|---|---|
+| 21/10/2026 | Estrutura inicial (primeiro commit) | Organização do repositório e dos módulos, menu principal inicial, definições de dificuldade e README | Guilherme de Almeida |
+| 22/10/2026 | Integração das dificuldades | Integração do menu à seleção, validação de entradas, implementação de `getGameConf()` e testes das configurações EASY, NORMAL e HARD | Guilherme de Almeida |
 
-A estrutura inicial do ATLAS foi desenvolvida por Guilherme de Almeida, incluindo:
+Novas contribuições serão incluídas conforme as entregas de cada integrante. A responsabilidade pelas implementações e revisões é compartilhada por toda a equipe.
 
-- Organização inicial dos diretórios e arquivos.
-- Criação do arquivo `main.c`.
-- Criação dos módulos `menu.c` e `menu.h`.
-- Desenvolvimento inicial do menu principal.
-- Utilização de `switch` para tratar opções.
-- Utilização de `do while` para controlar a repetição do menu.
-- Implementação inicial de validação com `scanf()` e `getchar()`.
-- Criação dos arquivos `difficulty.c` e `difficulty.h`.
-- Definição dos tipos `difficulty` e `gameConfig`.
-- Desenvolvimento da interface de seleção de dificuldade.
-- Implementação inicial da leitura de entradas com `fgets()`.
-- Tratamento de quebras de linha utilizando `strcspn()`.
-- Padronização de caracteres utilizando `tolower()`.
-- Comparação de entradas utilizando `strcmp()`.
-- Desenvolvimento inicial da lógica de identificação das dificuldades.
-- Planejamento das configurações de tabuleiro, tesouros, tentativas e dicas.
-- Organização inicial da documentação do projeto.
+### 3.2. Colaboração e autoria
 
-**Observação:** a seleção de dificuldades ainda precisa de integração e testes. A versão 0.1 representa a estrutura inicial em desenvolvimento, não uma versão jogável.
-
-### 3.2. Desenvolvimento colaborativo
-
-Os próximos módulos serão desenvolvidos com a participação da equipe.
-
-O histórico de commits do GitHub será utilizado para registrar a evolução do projeto e identificar as contribuições realizadas por cada integrante.
-
-Cada colaborador deverá utilizar sua própria identidade Git, realizar commits descritivos e compreender as implementações pelas quais é responsável.
-
-A divisão das tarefas não elimina a necessidade de todos os integrantes compreenderem o funcionamento geral da aplicação.
+O histórico de commits e as revisões no GitHub serão utilizados para identificar alterações, correções e novas funcionalidades. Cada integrante utilizará sua própria identidade Git e deverá compreender o código com o qual contribuir.
 
 ---
 
@@ -117,19 +91,29 @@ Foi criada a estrutura inicial do menu principal, responsável por apresentar as
 A interface atual segue este modelo:
 
 ```text
-===========================================
-                 A T L A S
-       A MALDICAO DO TESOURO PERDIDO
-===========================================
 
-         1 - Nova Expedicao
-         2 - Continuar Expedicao
-         3 - Manual do Explorador
-         4 - Ranking dos Exploradores
-         0 - Sair
+\===========================================
 
-===========================================
+                 A T L A S
+
+       A MALDICAO DO TESOURO PERDIDO
+
+\===========================================
+
+         1 - Nova Expedicao
+
+         2 - Continuar Expedicao
+
+         3 - Manual do Explorador
+
+         4 - Ranking dos Exploradores
+
+         0 - Sair
+
+\===========================================
+
 Escolha uma opcao:
+
 ```
 
 O módulo utiliza:
@@ -144,49 +128,28 @@ As opções ainda não integradas aos respectivos módulos apresentam mensagens 
 
 A validação completa de entradas, incluindo sequências como `1abc`, ainda está pendente.
 
-### 4.2. Sistema inicial de dificuldades
+### 4.2. Seleção de dificuldades e configuração da partida
 
-Foi iniciada a implementação de um sistema que permite selecionar dificuldades utilizando números ou palavras.
+A opção **Nova Expedição** do menu principal já está integrada à seleção de dificuldade. O jogador pode escolher uma opção pelo número ou pelo nome, sem diferenciação entre letras maiúsculas e minúsculas.
 
-O sistema foi planejado para aceitar:
-
-| Dificuldade | Entradas |
+| Dificuldade | Entradas aceitas |
 |---|---|
 | Fácil | `1`, `easy` |
 | Normal | `2`, `normal` |
 | Difícil | `3`, `hard` |
 | Voltar | `0`, `back` |
 
-As palavras poderão ser informadas com letras maiúsculas ou minúsculas.
+O módulo utiliza `fgets()` para leitura, `strcspn()` para remover a quebra de linha, `tolower()` para normalizar caracteres e `strcmp()` com operadores ternários para reconhecer a opção. As dificuldades são representadas pelo `enum difficulty`.
 
-Por exemplo:
-
-```text
-EASY
-Easy
-easy
-eAsY
-```
-
-Todas serão interpretadas como a dificuldade `EASY`, após a padronização da entrada.
-
-A implementação utiliza:
-
-- `fgets()` para receber o texto;
-- `strcspn()` para localizar a quebra de linha;
-- `tolower()` para converter letras maiúsculas;
-- `strcmp()` para comparar os comandos;
-- `enum` para representar o resultado da seleção.
-
-O módulo está sendo organizado em três funções:
-
-| Função | Responsabilidade |
+| Função | Responsabilidade atual |
 |---|---|
-| `showDifficulty()` | Exibir o menu de dificuldades |
-| `selectDiff()` | Ler, validar e interpretar a escolha |
-| `getGameConf()` | Retornar as configurações da dificuldade selecionada |
+| `showDifficulty()` | Mostrar as opções e capturar a escolha do jogador |
+| `difficultyLevel()` | Normalizar e interpretar a entrada, retornando `EASY`, `NORMAL`, `HARD`, `BACK` ou `INVALID` |
+| `getGameConf()` | Retornar a estrutura `gameConfig` com as configurações da dificuldade escolhida |
 
-**Estado atual:** a lógica inicial de interpretação foi elaborada, mas a integração completa e os testes permanecem pendentes.
+O `menu.c` utiliza temporariamente uma etapa de limpeza dos caracteres restantes após o `scanf()` para que a leitura com `fgets()` funcione. Ainda é necessário aprimorar a validação de entradas completas e a repetição automática diante de dificuldades inválidas.
+
+**Estado atual (22/10/2026):** integração básica concluída. A consulta às configurações das três dificuldades foi verificada por saídas temporárias de depuração, mas a inicialização de uma partida ainda não foi implementada.
 
 ---
 
@@ -202,45 +165,61 @@ O projeto possuirá três dificuldades, cada uma com configurações próprias.
 | Tentativas | 30 | 45 | 60 |
 | Usos da bússola | 3 | 2 | 1 |
 
-As configurações foram definidas inicialmente pela equipe e poderão ser ajustadas após testes de jogabilidade.
+Essas configurações foram adotadas como parâmetros iniciais do projeto e poderão ser ajustadas após testes de jogabilidade.
 
 ### 5.1. Representação com enum
 
 As dificuldades são representadas internamente pelo tipo:
 
 ```c
+
 typedef enum {
-    INVALID = -1,
-    BACK = 0,
-    EASY = 1,
-    NORMAL = 2,
-    HARD = 3
+
+    INVALID = -1,
+
+    BACK = 0,
+
+    EASY = 1,
+
+    NORMAL = 2,
+
+    HARD = 3
+
 } difficulty;
+
 ```
 
 Essa estrutura permite identificar cada dificuldade através de constantes nomeadas.
 
-A entrada textual fornecida pelo usuário será interpretada e convertida para uma dessas constantes.
+A entrada textual fornecida pelo jogador é interpretada e convertida para uma dessas constantes.
 
 ### 5.2. Configuração com struct
 
 As características de cada dificuldade serão armazenadas em:
 
 ```c
+
 typedef struct {
-    int rows;
-    int columns;
-    int treasures;
-    int attempts;
-    int compasses;
+
+    int rows;
+
+    int columns;
+
+    int treasures;
+
+    int attempts;
+
+    int compasses;
+
 } gameConfig;
+
 ```
 
 Cada campo representa uma característica da partida.
 
 Por exemplo, a dificuldade Fácil terá seis linhas, seis colunas, três tesouros, 30 tentativas e três usos da bússola.
 
-A função `getGameConf()` será responsável por retornar essas informações.
+A função `getGameConf()` retorna essas informações para as dificuldades válidas. A aplicação efetiva desses parâmetros ao tabuleiro dependerá da futura `runGame()`.
 
 ---
 
@@ -250,15 +229,23 @@ O ATLAS seguirá as regras estabelecidas no tema **J4 — Caça ao Tesouro** do 
 
 ### Regras principais
 
-1. O jogador não se movimenta pelo tabuleiro.
-2. Cada jogada consiste na escolha de uma coordenada.
-3. Os tesouros permanecem ocultos até serem encontrados.
-4. As posições investigadas permanecem identificadas.
-5. Selecionar uma posição já explorada não consome outra tentativa.
-6. Cada partida possui uma quantidade limitada de tentativas.
-7. A vitória ocorre quando todos os tesouros são encontrados antes do fim das tentativas.
-8. A derrota ocorre quando as tentativas terminam sem que todos os tesouros tenham sido encontrados.
-9. Os tesouros devem ser armazenados em uma coleção dinâmica separada da representação do tabuleiro.
+1\. O jogador não se movimenta pelo tabuleiro.
+
+2\. Cada jogada consiste na escolha de uma coordenada.
+
+3\. Os tesouros permanecem ocultos até serem encontrados.
+
+4\. As posições investigadas permanecem identificadas.
+
+5\. Selecionar uma posição já explorada não consome outra tentativa.
+
+6\. Cada partida possui uma quantidade limitada de tentativas.
+
+7\. A vitória ocorre quando todos os tesouros são encontrados antes do fim das tentativas.
+
+8\. A derrota ocorre quando as tentativas terminam sem que todos os tesouros tenham sido encontrados.
+
+9\. Os tesouros devem ser armazenados em uma coleção dinâmica separada da representação do tabuleiro.
 
 ### Funcionalidades obrigatórias
 
@@ -380,12 +367,15 @@ Ao investigar uma coordenada vazia, o jogador poderá receber uma informação s
 Por exemplo:
 
 ```text
+
 Coordenada investigada: C4
 
 Nenhum tesouro encontrado.
 
 RADAR:
+
 Existem 2 tesouros nas proximidades.
+
 ```
 
 A informação deverá ser calculada com base nas posições reais dos tesouros.
@@ -416,18 +406,29 @@ O manual apresentará as principais informações sobre o universo e o funcionam
 
 ### Conteúdo previsto
 
-1. Introdução e história.
-2. Objetivo do jogo.
-3. Regras de investigação.
-4. Controles e coordenadas.
-5. Dificuldades.
-6. Tipos de terreno.
-7. Tesouros possíveis.
-8. Funcionamento das pistas.
-9. Condições de vitória e derrota.
-10. Salvamento, carregamento e ranking.
-11. Dicas gerais para iniciantes.
-12. Créditos.
+1\. Introdução e história.
+
+2\. Objetivo do jogo.
+
+3\. Regras de investigação.
+
+4\. Controles e coordenadas.
+
+5\. Dificuldades.
+
+6\. Tipos de terreno.
+
+7\. Tesouros possíveis.
+
+8\. Funcionamento das pistas.
+
+9\. Condições de vitória e derrota.
+
+10\. Salvamento, carregamento e ranking.
+
+11\. Dicas gerais para iniciantes.
+
+12\. Créditos.
 
 A proposta é que o manual também contribua para a ambientação do jogo, com uma apresentação inspirada nos manuais de jogos clássicos de computador.
 
@@ -481,18 +482,31 @@ O ATLAS será organizado em módulos para separar as responsabilidades do progra
 ### 12.1. Estrutura inicial
 
 ```text
+
 ATLAS/
+
 |
+
 |-- include/
-|   |-- menu.h
-|   |-- difficulty.h
+
+|   |-- menu.h
+
+|   |-- difficulty.h
+
 |
+
 |-- src/
-|   |-- main.c
-|   |-- menu.c
-|   |-- difficulty.c
+
+|   |-- main.c
+
+|   |-- menu.c
+
+|   |-- difficulty.c
+
 |
+
 |-- README.md
+
 ```
 
 ### 12.2. Responsabilidades atuais
@@ -565,117 +579,25 @@ O desenvolvimento buscará compatibilidade entre Windows e Linux, utilizando pri
 
 ---
 
-## 14. Compilação e execução - Em Desenvolvimento
+## 14. Limitações atuais
 
-O projeto utilizará GCC como compilador.
+A estrutura de menus e o sistema inicial de dificuldades funcionam, mas o ATLAS **ainda não possui uma partida jogável**.
 
-A compilação deverá ser realizada a partir da pasta principal do repositório.
+Pontos pendentes:
 
-### Windows
-
-Com os módulos integrados, o comando previsto será:
-
-```bash
-gcc -std=c11 -Wall -Wextra -Iinclude src/main.c src/menu.c src/difficulty.c -o atlas.exe
-```
-
-Execução no PowerShell:
-
-```powershell
-.\atlas.exe
-```
-
-### Linux
-
-```bash
-gcc -std=c11 -Wall -Wextra -Iinclude src/main.c src/menu.c src/difficulty.c -o atlas
-```
-
-Execução:
-
-```bash
-./atlas
-```
-
-**Importante:** esses comandos deverão ser verificados após a integração das funções. O código ainda está em desenvolvimento e pode apresentar referências a módulos não implementados.
-
-Quando a estrutura definitiva estiver pronta, esta seção será atualizada com instruções de compilação testadas.
+- Melhorar a validação integral das entradas (incluindo `1abc`, entradas extensas e EOF).
+- Repetir a seleção de dificuldade após uma entrada inválida, em vez de retornar ao menu principal.
+- Substituir as mensagens temporárias de depuração pela chamada da futura `runGame()`.
+- Implementar limpeza de tela e aperfeiçoamentos da interface.
+- Desenvolver o tabuleiro com matriz dinâmica e o TAD correspondente.
+- Criar a coleção dinâmica de tesouros e a investigação por coordenadas.
+- Implementar tentativas, condições de vitória/derrota, salvamento e carregamento.
+- Desenvolver ranking e manual externo.
+- Ampliar os testes de integração e de casos extremos.
 
 ---
 
-## 15. Planejamento do desenvolvimento
-
-O projeto seguirá as etapas estabelecidas na disciplina.
-
-| Data | Etapa |
-|---|---|
-| 20/10/2026 | Checkpoint 1 — Estrutura inicial |
-| 27/10/2026 | Checkpoint 2 — Núcleo funcional |
-| 03/11/2026 | Estabilização final |
-| 06/11/2026 | Início previsto das avaliações técnicas |
-
-Existe uma divergência entre as datas de avaliação apresentadas nas diferentes seções do documento do professor. A equipe deverá confirmar o cronograma definitivo.
-
-### Etapas internas
-
-**Etapa 1 — Inicialização e menus**
-
-- Estrutura do projeto;
-- Menu principal;
-- Seleção de dificuldade;
-- Validação de entradas.
-
-**Etapa 2 — Núcleo do jogo**
-
-- Matriz dinâmica;
-- Geração do tabuleiro;
-- Coleção dinâmica de tesouros;
-- Investigação por coordenadas;
-- Controle de tentativas;
-- Vitória e derrota.
-
-**Etapa 3 — Funcionalidades obrigatórias restantes**
-
-- Salvamento;
-- Carregamento;
-- Ranking;
-- Tratamento de erros;
-- Revisão do encapsulamento.
-
-**Etapa 4 — Diferenciais e estabilização**
-
-- Sistema de pistas;
-- Mapa ASCII temático;
-- Manual do Explorador;
-- Ajustes de interface;
-- Balanceamento;
-- Testes finais.
-
-A implementação dos requisitos obrigatórios terá prioridade sobre funcionalidades adicionais.
-
----
-
-## 16. Limitações atuais
-
-A versão 0.1 ainda não representa um jogo funcional completo.
-
-As limitações conhecidas incluem:
-
-- Seleção de dificuldade ainda não completamente integrada;
-- Validação de entradas pendente de melhorias;
-- Ausência de tabuleiro dinâmico;
-- Ausência de geração de tesouros;
-- Ausência de investigação de coordenadas;
-- Ausência de persistência;
-- Ausência de ranking funcional;
-- Manual ainda não criado;
-- Testes de integração pendentes.
-
-Essas limitações serão atualizadas conforme o desenvolvimento avançar.
-
----
-
-## 17. Uso de Inteligência Artificial
+## 15. Uso de Inteligência Artificial
 
 Ferramentas de Inteligência Artificial generativa estão sendo utilizadas como apoio ao desenvolvimento do ATLAS.
 
@@ -698,7 +620,7 @@ Todos os integrantes deverão ser capazes de explicar as decisões técnicas e o
 
 ---
 
-## 18. Contribuições e controle de versão
+## 16. Contribuições e controle de versão
 
 O desenvolvimento será registrado por meio de commits no GitHub.
 
@@ -707,13 +629,21 @@ As mensagens deverão identificar claramente as alterações realizadas.
 Exemplos:
 
 ```text
+
 chore: initialize ATLAS project structure
+
 feat: implement main menu
+
 feat: add difficulty selection
+
 fix: validate invalid menu input
+
 feat: implement dynamic board
+
 feat: add treasure generation
+
 docs: update game manual
+
 ```
 
 Cada integrante deverá configurar sua própria identidade Git.
@@ -724,49 +654,28 @@ O histórico de commits servirá como registro técnico da evolução do ATLAS e
 
 ---
 
-## 19. Próximas tarefas
+## 17. Próximas tarefas
 
-As atividades prioritárias após o primeiro commit serão:
+Após a integração básica das dificuldades e a implementação de `getGameConf()`, as próximas prioridades são:
 
-- Finalizar a implementação de `selectDiff()`.
-- Concluir a função `getGameConf()`.
-- Integrar a seleção de dificuldade ao menu principal.
-- Melhorar a validação das entradas.
-- Desenvolver o Manual do Explorador.
-- Iniciar o TAD do tabuleiro.
-- Implementar a matriz dinâmica.
-- Criar a coleção dinâmica de tesouros.
+- Refinar o tratamento de entradas inválidas, EOF e valores muito longos.
+- Definir o fluxo `BACK` e a repetição da seleção de dificuldade.
+- Remover as mensagens temporárias de debug ao conectar o início real da partida.
+- Implementar `runGame(gameConfig config)` e inicialização do estado da partida.
+- Desenvolver o TAD do tabuleiro e a matriz dinâmica.
+- Implementar a coleção dinâmica independente de tesouros.
+- Desenvolver investigação de coordenadas, tentativas e condições de vitória/derrota.
+- Implementar salvamento, carregamento, ranking e manual.
 
-O planejamento poderá ser atualizado conforme as decisões técnicas da equipe.
-
----
-
-## 20. Visão futura
-
-Após a conclusão da versão acadêmica, a equipe poderá continuar evoluindo o ATLAS como projeto de portfólio.
-
-Entre as possibilidades futuras estão:
-
-- Novos mapas;
-- Novas dificuldades;
-- Expansão narrativa;
-- Charadas e enigmas;
-- Eventos especiais;
-- Personagens;
-- Sistemas de combate;
-- Novas mecânicas de exploração.
-
-Essas funcionalidades não fazem parte do escopo obrigatório da versão acadêmica e somente serão desenvolvidas posteriormente, ou mediante autorização quando necessário.
-
-A prioridade atual é entregar um Caça ao Tesouro funcional, organizado e compatível com o tema J4.
+Os requisitos obrigatórios do tema J4 terão prioridade sobre funcionalidades adicionais.
 
 ---
 
-## 21. Créditos
+## 18. Créditos
 
 **ATLAS — A Maldição do Tesouro Perdido**
 
-Desenvolvido por:
+Projeto desenvolvido em equipe por:
 
 - Guilherme de Almeida
 - Guilherme Arthur
@@ -777,10 +686,10 @@ Desenvolvido por:
 **Programação Avançada — 2026.2**  
 **Professor: Thierry Araujo**
 
-**Desenvolvimento inicial e primeiro marco do projeto:** Guilherme de Almeida.
+As atividades realizadas por integrante são registradas no histórico de contribuições e no GitHub.
 
 ---
 
-*ATLAS — A Maldição do Tesouro Perdido*
+**ATLAS — A Maldição do Tesouro Perdido**
 
 **Nem todo tesouro deve ser encontrado. Mas todos precisam ser procurados.**

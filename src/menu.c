@@ -1,8 +1,11 @@
 #include <stdio.h> 
 #include "../include/menu.h"
+#include "../include/difficulty.h"
 
 void runMainMenu(){
     int option, result;
+    difficulty selectedLevel;
+    gameConfig config;
 
     do{
         printf("===========================================\n");
@@ -18,26 +21,53 @@ void runMainMenu(){
         printf("\n");
         printf("===========================================\n");
         printf("Escolha uma opcao: ");
-        result = scanf("%d", &option);
-        
-        if (result != 1){
-            int ch;
-            printf("ERRO: Apenas Numeros sao Aceitos. Digite um numero valido. \n");
-            
-           while ((ch = getchar()) != '\n' && ch != EOF) {
+     result = scanf("%d", &option);
+
+if (result != 1) {
+    int ch;
+
+    printf("ERRO: Apenas numeros sao aceitos. Digite um numero valido.\n");
+
+    // Limpa os caracteres invalidos do buffer
+    while ((ch = getchar()) != '\n' && ch != EOF) {
+    }
+
+    // Encerra se a entrada chegou ao fim
+    if (ch == EOF) {
+        break;
+    }
+
+    option = -1;
+    continue;
 }
 
-            if (ch == EOF){
-                break;
-            }
+// Limpa o restante da linha apos uma leitura numerica
+int ch;
 
-            option = -1; 
-            continue;
-        }
-
+while ((ch = getchar()) != '\n' && ch != EOF) {
+}
           switch (option){
             case 1:
-            printf("Dificuldade em desenvolvimento\n");
+            printf("Iniciando nova expedicao. . .\n");
+            selectedLevel = showDifficulty();
+            
+            if(selectedLevel == BACK){
+                printf("Retornando ao Menu Principal...\n");
+            }
+            else if(selectedLevel == INVALID){
+                printf("ERRO: Dificuldade Invalida\n");
+            }
+            else {
+                config = getGameConf(selectedLevel);
+
+                printf("\n========== DEBUG GAME CONFIG ==========\n");
+                printf("Linhas: %d\n", config.rows);
+                printf("Colunas: %d\n", config.columns);
+                printf("Tesouros: %d\n", config.treasures);
+                printf("Tentativas: %d\n", config.attempts);
+                printf("Bussolas: %d\n", config.compasses);
+                printf("=======================================\n");
+}
             break;
 
             case 2: 
