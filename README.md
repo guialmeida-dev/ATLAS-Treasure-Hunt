@@ -265,28 +265,27 @@ O programa deverá permitir:
 ### Limitações do tema
 ### 6.1. Estruturas de dados
 
-O estado conhecido pelo jogador fica no tabuleiro (`tab`). Os tesouros ficam em um vetor dinâmico separado (regra 9), alocado com `realloc`.
+O estado conhecido pelo jogador fica no tabuleiro (`board`). Os tesouros ficam em um vetor dinâmico separado (regra 9), alocado com `realloc`. As dimensões e os limites da partida vêm da `gameConfig` da seção 5.
 
 ```c
 typedef struct {
-    int lin;
-    int col;
-    int achado;              /* 0 = oculto, 1 = encontrado */
-} Tesouro;
+    int row;
+    int column;
+    int found;      // 0 = oculto, 1 = encontrado
+} Treasure;
 
 typedef struct {
-    int rows;                         /* linhas do tabuleiro           */
-    int columns;                      /* colunas do tabuleiro          */
-    int tent_max;                     /* tentativas totais da partida  */
-    int tent_rest;                    /* tentativas restantes          */
-    char tab[TAM_MAX][TAM_MAX];       /* estado CONHECIDO pelo jogador */
-    Tesouro *tesouros;                /* coleção dinâmica de tesouros  */
-    int n_tes;                        /* quantidade de tesouros        */
-    int cap_tes;                      /* capacidade alocada            */
-    int achados;                      /* tesouros encontrados          */
-} Jogo;
+    int rows;
+    int columns;
+    int maxAttempts;
+    int attemptsLeft;
+    char board[TREASURE_MAX_SIZE][TREASURE_MAX_SIZE]; // Somente o que o jogador já sabe
+    Treasure *treasures;                              // Coleção dinâmica de tesouros
+    int treasureCount;
+    int treasureCapacity;
+    int foundCount;
+} TreasureGame;
 ```
-
 ### 6.2. Início da partida
 
 `jogo_iniciar` recebe a quantidade de linhas, colunas, tesouros e tentativas (valores definidos pelos níveis de dificuldade da seção 5), monta o tabuleiro e sorteia as posições dos tesouros sem repetição, guardando-as no vetor dinâmico.
@@ -321,15 +320,17 @@ static ResultadoInv jogo_investigar(Jogo *j, int lin, int col)
 | Regra / funcionalidade | Implementação |
 |---|---|
 | Regras 1 e 2 | o jogador apenas informa uma coordenada (ex.: `B3`), sem movimentação |
-| Regras 3 e 4 | `tab` guarda apenas o que o jogador já descobriu (`.` oculto, `o` vazio, `$` tesouro) |
-| Regra 5 | `jogo_investigar` retorna `INV_REPETIDA` antes de diminuir `tent_rest` |
-| Regras 6, 7 e 8 | `jogo_estado` verifica vitória (todos achados) ou derrota (tentativas esgotadas) |
-| Regra 9 | vetor `tesouros` com crescimento dinâmico em `tesouro_adicionar` |
-| Iniciar partida / gerar tabuleiro | `jogo_iniciar` |
-| Exibir estado conhecido | `jogo_exibir` |
-| Salvar partida | `jogo_salvar`, grava em `partida.sav` |
-| Retomar partida | `jogo_carregar`, lê e valida o `partida.sav` |
-| Ranking | `ranking_registrar` e `ranking_exibir`, usando `ranking.txt` e `qsort` |
+| Regras 3 e 4 | `board` guarda apenas o que o jogador já descobriu (`.` oculto, `o` vazio, `$` tesouro) |
+| Regra 5 | `investigateCoordinate` retorna `INVESTIGATE_REPEATED` antes de diminuir `attemptsLeft` |
+| Regras 6, 7 e 8 | `getTreasureState` verifica vitória (todos achados) ou derrota (tentativas esgotadas) |
+| Regra 9 | vetor `treasures` com crescimento dinâmico em `addTreasure` |
+| Iniciar partida / gerar tabuleiro | `startTreasureGame` |
+| Exibir estado conhecido | `showKnownBoard` |
+| Salvar partida | `saveTreasureGame`, grava em `partida.sav` |
+| Retomar partida | `loadTreasureGame`, lê e valida o `partida.sav` |
+| Ranking | `registerRanking` e `showRanking`, usando `ranking.txt` e `qsort` |
+
+Os arquivos da implementação são `include/treasure.h` e `src/treasure.c`.
 
 
 Conforme o enunciado, o jogo não possuirá:
