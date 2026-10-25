@@ -18,3 +18,6 @@ bin/
 # Salvamentos e rankings locais
 data/saves/
 data/ranking.txt
+partida.sav
+ranking.txt
+*.exe
