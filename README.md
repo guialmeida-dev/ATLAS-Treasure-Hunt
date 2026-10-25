@@ -263,6 +263,74 @@ O programa deverá permitir:
 - Manter um ranking de resultados.
 
 ### Limitações do tema
+### 6.1. Estruturas de dados
+
+O estado conhecido pelo jogador fica no tabuleiro (`tab`). Os tesouros ficam em um vetor dinâmico separado (regra 9), alocado com `realloc`.
+
+```c
+typedef struct {
+    int lin;
+    int col;
+    int achado;              /* 0 = oculto, 1 = encontrado */
+} Tesouro;
+
+typedef struct {
+    int rows;                         /* linhas do tabuleiro           */
+    int columns;                      /* colunas do tabuleiro          */
+    int tent_max;                     /* tentativas totais da partida  */
+    int tent_rest;                    /* tentativas restantes          */
+    char tab[TAM_MAX][TAM_MAX];       /* estado CONHECIDO pelo jogador */
+    Tesouro *tesouros;                /* coleção dinâmica de tesouros  */
+    int n_tes;                        /* quantidade de tesouros        */
+    int cap_tes;                      /* capacidade alocada            */
+    int achados;                      /* tesouros encontrados          */
+} Jogo;
+```
+
+### 6.2. Início da partida
+
+`jogo_iniciar` recebe a quantidade de linhas, colunas, tesouros e tentativas (valores definidos pelos níveis de dificuldade da seção 5), monta o tabuleiro e sorteia as posições dos tesouros sem repetição, guardando-as no vetor dinâmico.
+
+### 6.3. Investigação de coordenadas
+
+```c
+static ResultadoInv jogo_investigar(Jogo *j, int lin, int col)
+{
+    if (lin < 0 || lin >= j->rows || col < 0 || col >= j->columns)
+        return INV_INVALIDA;
+
+    if (j->tab[lin][col] != CEL_OCULTA)
+        return INV_REPETIDA;        /* regra 5: não consome tentativa */
+
+    j->tent_rest--;                 /* regra 6: tentativas limitadas */
+
+    int idx = tesouro_em(j, lin, col);
+    if (idx >= 0) {
+        j->tesouros[idx].achado = 1;
+        j->achados++;
+        j->tab[lin][col] = CEL_TESOURO;
+        return INV_TESOURO;
+    }
+    j->tab[lin][col] = CEL_VAZIA;   /* regra 4: posição fica marcada */
+    return INV_VAZIA;
+}
+```
+
+### 6.4. Correspondência com as regras
+
+| Regra / funcionalidade | Implementação |
+|---|---|
+| Regras 1 e 2 | o jogador apenas informa uma coordenada (ex.: `B3`), sem movimentação |
+| Regras 3 e 4 | `tab` guarda apenas o que o jogador já descobriu (`.` oculto, `o` vazio, `$` tesouro) |
+| Regra 5 | `jogo_investigar` retorna `INV_REPETIDA` antes de diminuir `tent_rest` |
+| Regras 6, 7 e 8 | `jogo_estado` verifica vitória (todos achados) ou derrota (tentativas esgotadas) |
+| Regra 9 | vetor `tesouros` com crescimento dinâmico em `tesouro_adicionar` |
+| Iniciar partida / gerar tabuleiro | `jogo_iniciar` |
+| Exibir estado conhecido | `jogo_exibir` |
+| Salvar partida | `jogo_salvar`, grava em `partida.sav` |
+| Retomar partida | `jogo_carregar`, lê e valida o `partida.sav` |
+| Ranking | `ranking_registrar` e `ranking_exibir`, usando `ranking.txt` e `qsort` |
+
 
 Conforme o enunciado, o jogo não possuirá:
 
