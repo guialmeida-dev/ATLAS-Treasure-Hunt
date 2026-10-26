@@ -1,10 +1,10 @@
-#include <studio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "../include/player.h"
 
-int infoPlayer(){
+int infoPlayer(Player *player, difficulty level){
     //condicional criada para impedir o acesso a uma estrutura inexistente
     if(player == NULL){
         printf("ERRO: Falha ao Ler nome\n");
@@ -39,7 +39,7 @@ int infoPlayer(){
         }
         int hasCharacter = 0; // Criado para verificar se existe nome que contem apenas espaços
 
-        for(int =  0; player->name[i] != '\0'; i++){ // Percorre toda a string
+        for(int i = 0; player->name[i] != '\0'; i++){ // Percorre toda a string
             if(!isspace((unsigned char)player->name[i])){
                 hasCharacter = 1;
                 break; // Se sim, para o codigo e retorna ao inicio

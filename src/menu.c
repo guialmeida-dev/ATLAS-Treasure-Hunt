@@ -1,11 +1,13 @@
 #include <stdio.h> 
 #include "../include/menu.h"
 #include "../include/difficulty.h"
+#include "../include/player.h"
 
 void runMainMenu(){
     int option, result;
     difficulty selectedLevel;
     gameConfig config;
+    Player player = {0};
 
     do{
         printf("===========================================\n");
@@ -47,28 +49,38 @@ int ch;
 while ((ch = getchar()) != '\n' && ch != EOF) {
 }
           switch (option){
-            case 1:
-            printf("Iniciando nova expedicao. . .\n");
-            selectedLevel = showDifficulty();
             
-            if(selectedLevel == BACK){
-                printf("Retornando ao Menu Principal...\n");
-            }
-            else if(selectedLevel == INVALID){
-                printf("ERRO: Dificuldade Invalida\n");
-            }
-            else {
-                config = getGameConf(selectedLevel);
+        case 1:
+            printf("Iniciando nova expedicao...\n");
+            selectedLevel = showDifficulty();
 
-                printf("\n========== DEBUG GAME CONFIG ==========\n");
-                printf("Linhas: %d\n", config.rows);
-                printf("Colunas: %d\n", config.columns);
-                printf("Tesouros: %d\n", config.treasures);
-                printf("Tentativas: %d\n", config.attempts);
-                printf("Bussolas: %d\n", config.compasses);
-                printf("=======================================\n");
-}
+         if (selectedLevel == BACK) {
+            printf("Retornando ao Menu Principal...\n");
+        }
+        else if (selectedLevel == INVALID) {
+            printf("ERRO: Dificuldade Invalida.\n");
+        }
+        else {
+            config = getGameConf(selectedLevel);
+            printf("\n========== DEBUG GAME CONFIG ==========\n");
+            printf("Linhas: %d\n", config.rows);
+            printf("Colunas: %d\n", config.columns);
+            printf("Tesouros: %d\n", config.treasures);
+            printf("Tentativas: %d\n", config.attempts);
+            printf("Bussolas: %d\n", config.compasses);
+            printf("=======================================\n");
+
+            if (!infoPlayer(&player, selectedLevel)) {
+            printf("ERRO: Nao foi possivel cadastrar o explorador.\n");
             break;
+            }
+            printf("\n===== EXPLORADOR CADASTRADO =====\n");
+            printf("Nome: %s\n", player.name);
+            printf("Pontuacao: %d\n", player.score);
+            printf("Dificuldade: %d\n", player.level);
+            printf("================================\n");
+        }
+        break;
 
             case 2: 
             printf("Inciacao de jogo Salvo em desenvolvimento\n");

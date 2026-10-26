@@ -21,3 +21,15 @@ data/ranking.txt
 partida.sav
 ranking.txt
 *.exe
+
+# Arquivos de compilacao
+*.exe
+*.o
+*.obj
+
+# Arquivos de persistencia local
+*.sav
+ranking.txt
+
+# Testes locais
+/test/
