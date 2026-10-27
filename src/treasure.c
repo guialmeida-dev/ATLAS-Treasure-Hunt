@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
-#include "treasure.h"
+#include "../include/treasure.h"
 
 #define SAVE_FILE     "partida.sav"
 #define RANKING_FILE  "ranking.txt"

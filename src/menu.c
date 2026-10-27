@@ -2,6 +2,7 @@
 #include "../include/menu.h"
 #include "../include/difficulty.h"
 #include "../include/player.h"
+#include "../include/manual.h"
 
 void runMainMenu(){
     int option, result;
@@ -88,6 +89,7 @@ while ((ch = getchar()) != '\n' && ch != EOF) {
 
             case 3:
             printf("Execucao de Manual do Jogo em Desenvolvimento\n");
+            menuManual();
             break;
 
             case 4:
