@@ -2,6 +2,8 @@
 
 **Um jogo de caça ao tesouro, estratégia e investigação desenvolvido em linguagem C.**
 
+**Documentação atualizada em 27/10/2026 — versão 0.4.**
+
 ---
 
 ## 1. Informações do projeto
@@ -17,7 +19,7 @@
 | Tema | J4 — Caça ao Tesouro |
 | Linguagem | C |
 | Interface | Terminal (CLI) |
-| Versão | 0.3 — Cadastro de explorador e base do sistema de tesouros |
+| Versão | 0.4 — Cadastro de explorador e base do sistema de tesouros |
 | Status | Em desenvolvimento |
 
 O ATLAS é um projeto acadêmico desenvolvido por quatro estudantes de Ciência da Computação da FACAPE.
@@ -61,8 +63,8 @@ O ATLAS é desenvolvido colaborativamente pelos quatro integrantes abaixo, com r
 | Integrante | Participação |
 |---|---|
 | Guilherme de Almeida | Equipe de desenvolvimento |
-| Guilherme Arthur | Equipe de desenvolvimento |
-| Marcio | Equipe de desenvolvimento — nome completo pendente |
+| Guilherme Arthur | Equipe de desenvolvimento; implementação dos módulos `manual.c` e `manual.h` |
+| Marcio | Equipe de desenvolvimento; implementação dos módulos `treasure.c` e `treasure.h` |
 | Enzo | Equipe de desenvolvimento — nome completo pendente |
 
 As contribuições efetivamente realizadas são registradas por etapa no histórico abaixo e nos commits, sem estabelecer hierarquia entre os integrantes.
@@ -75,6 +77,7 @@ As contribuições efetivamente realizadas são registradas por etapa no histór
 | 22/10/2026 | Integração das dificuldades | Integração do menu à seleção, validação de entradas, implementação de `getGameConf()` e testes das configurações EASY, NORMAL e HARD | Guilherme de Almeida |
 | Até 26/10/2026 | Núcleo de caça ao tesouro | Desenvolvimento de `treasure.c`/`treasure.h`: distribuição e investigação de tesouros, controle de tentativas, salvamento/carregamento e primeira versão do ranking | Marcio |
 | 26/10/2026 | Cadastro do explorador | Ajustes e depuração de `player.c`/`player.h`, validação de nomes e integração do cadastro após a seleção da dificuldade no menu | Guilherme de Almeida |
+| Até 27/10/2026 | Manual do Explorador | Desenvolvimento de `manual.c`/`manual.h`: submenu, criação de arquivo de texto, abertura externa e tratamento condicional para Windows/Linux; chamada adicionada à opção 3 do menu na versão recebida | Guilherme Arthur |
 
 Novas contribuições serão incluídas conforme as entregas de cada integrante. A responsabilidade pelas implementações e revisões é compartilhada por toda a equipe.
 
@@ -151,7 +154,7 @@ O módulo utiliza `fgets()` para leitura, `strcspn()` para remover a quebra de l
 
 O `menu.c` utiliza temporariamente uma etapa de limpeza dos caracteres restantes após o `scanf()` para que a leitura com `fgets()` funcione. Ainda é necessário aprimorar a validação de entradas completas e a repetição automática diante de dificuldades inválidas.
 
-**Estado atual (26/10/2026):** seleção da dificuldade e cadastro do explorador integrados e verificados no terminal. A opção Nova Expedição ainda não chama o laço jogável implementado em `treasure.c`.
+**Estado confirmado em 26/10/2026:** seleção da dificuldade e cadastro do explorador integrados e verificados no terminal. A opção Nova Expedição ainda não chama o laço jogável implementado em `treasure.c`.
 
 
 ### 4.3. Cadastro do explorador
@@ -350,45 +353,22 @@ A bússola será representada por um contador de dicas, sem criar um sistema de 
 
 ---
 
-## 10. Manual do Explorador — Planejamento
+## 10. Manual do Explorador — Implementação inicial (Guilherme Arthur)
 
-O jogo contará com um manual externo, armazenado em arquivo de texto.
+Guilherme Arthur desenvolveu os módulos **`src/manual.c` e `include/manual.h`**, recebidos na versão do projeto de 27/10/2026. O módulo oferece um submenu com opções para **criar o manual**, **abrir o manual** e **voltar**.
 
-**Arquivo previsto:** `data/manual.txt`
+A função `criarManual()` verifica a existência de `manual.txt` no diretório de execução e, quando ausente, cria um documento com orientações sobre objetivo, tabuleiro, coordenadas, tentativas, vitória/derrota, salvamento, ranking e dicas. A função `abrirManual()` utiliza a abertura externa do arquivo, com tratamento condicional para Windows e Linux. A função `menuManual()` oferece a interação no terminal.
 
-O manual apresentará as principais informações sobre o universo e o funcionamento do ATLAS.
+Na cópia recebida, a opção **[3] Manual do Explorador** em `menu.c` chama `menuManual()`. **Essa implementação foi recebida e compilada, mas sua integração à versão local principal ainda deve ser conferida antes de um commit.**
 
-### Conteúdo previsto
+### Ajustes identificados na revisão
 
-1\. Introdução e história.
+- Trocar chamadas recursivas de `menuManual()` por um laço de repetição.
+- Validar a entrada numérica do submenu e falhas ao criar/abrir arquivos.
+- Alinhar a explicação do tabuleiro aos símbolos e à orientação de coordenadas efetivamente usados em `treasure.c` (colunas com letras, linhas numeradas; `.`, `o` e `$`).
+- Alinhar a nomenclatura do manual ao título completo do ATLAS e conferir os caminhos de arquivos.
 
-2\. Objetivo do jogo.
-
-3\. Regras de investigação.
-
-4\. Controles e coordenadas.
-
-5\. Dificuldades.
-
-6\. Tipos de terreno.
-
-7\. Tesouros possíveis.
-
-8\. Funcionamento das pistas.
-
-9\. Condições de vitória e derrota.
-
-10\. Salvamento, carregamento e ranking.
-
-11\. Dicas gerais para iniciantes.
-
-12\. Créditos.
-
-A proposta é que o manual também contribua para a ambientação do jogo, com uma apresentação inspirada nos manuais de jogos clássicos de computador.
-
-O acesso será realizado pelo menu principal.
-
-**Estado atual:** planejado, ainda não implementado.
+A autoria dessa implementação é atribuída a **Guilherme Arthur**, preservando o crédito original enquanto a equipe realiza a revisão e integração.
 
 ---
 
@@ -420,19 +400,20 @@ ATLAS-Treasure-Hunt/
 |   |-- menu.h
 |   |-- difficulty.h
 |   |-- player.h
-|   `-- treasure.h
+|   |-- treasure.h
+|   `-- manual.h
 |-- src/
 |   |-- main.c
 |   |-- menu.c
 |   |-- difficulty.c
 |   |-- player.c
-|   `-- treasure.c
-|-- test/
-|   `-- test_player.c
+|   |-- treasure.c
+|   `-- manual.c
+|-- test/                   (testes locais, ignorados pelo Git)
 `-- README.md
 ```
 
-A pasta `test/` foi utilizada na depuração local do cadastro; confirmar seu conteúdo com `git status` antes de adicioná-la ao commit. Outros arquivos do projeto, como os do manual, podem existir na cópia local e não foram incluídos nesta listagem dos módulos analisados.
+A pasta `test/` contém testes locais e foi configurada para ser ignorada pelo Git. Os arquivos do manual constam na versão enviada por Guilherme Arthur; confirmar sua incorporação na branch principal antes do próximo commit.
 
 ### 12.2. Responsabilidades
 
@@ -442,7 +423,8 @@ A pasta `test/` foi utilizada na depuração local do cadastro; confirmar seu co
 | `menu.c/.h` | Exibir menu, escolher dificuldade e iniciar cadastro |
 | `difficulty.c/.h` | Ler dificuldade e produzir `gameConfig` |
 | `player.c/.h` | Validar e inicializar os dados do explorador |
-| `treasure.c/.h` | Gerar e investigar tesouros, exibir tabuleiro conhecido, salvar/carregar e registrar ranking |
+| `treasure.c/.h` | Gerar e investigar tesouros, exibir tabuleiro conhecido, salvar/carregar e registrar ranking — desenvolvimento de Marcio |
+| `manual.c/.h` | Submenu do manual, criação do arquivo de texto e abertura externa — desenvolvimento de Guilherme Arthur |
 
 ### 12.3. Organização futura
 
@@ -489,7 +471,7 @@ O desenvolvimento buscará compatibilidade entre Windows e Linux, utilizando pri
 
 ## 14. Limitações atuais
 
-Em 26/10/2026, o menu principal, a seleção de dificuldade e o cadastro do explorador já funcionam juntos. O núcleo jogável, desenvolvido em módulo separado por Marcio, ainda não foi integrado ao menu.
+Na versão integrada e testada em 26/10/2026, o menu principal, a seleção de dificuldade e o cadastro do explorador já funcionam juntos. O núcleo jogável, desenvolvido em módulo separado por Marcio, ainda não foi integrado ao menu.
 
 Pendências identificadas:
 
@@ -500,7 +482,7 @@ Pendências identificadas:
 - Reforçar validação do arquivo salvo e o tratamento de falhas de gravação.
 - Impedir ações pela API de investigação após vitória ou derrota.
 - Melhorar entradas inválidas, EOF, comandos e nomes acima do limite.
-- Concluir ou integrar o Manual do Explorador, cuja implementação foi delegada.
+- Integrar e revisar o Manual do Explorador de Guilherme Arthur na branch principal, corrigindo validação, recursão e divergências com o tabuleiro.
 - Implementar radar e bússola no estágio apropriado.
 - Executar testes integrados da partida completa e registrar resultados.
 
@@ -577,7 +559,7 @@ Prioridades imediatas:
 4. Conectar o carregamento/salvamento e o ranking às opções do menu.
 5. Revisar entradas, memória, falhas e executar uma demonstração de ponta a ponta.
 
-A refatoração do ranking para melhor pontuação por jogador e dificuldade permanece uma próxima tarefa, **não uma entrega já concluída**. Recursos extras não devem substituir os requisitos centrais do checkpoint.
+A refatoração do ranking para melhor pontuação por jogador e dificuldade permanece uma próxima tarefa, **não uma entrega já concluída**. A versão do Manual do Explorador de Guilherme Arthur já foi recebida, mas a integração definitiva e as correções ainda precisam ser verificadas. Recursos extras não devem substituir os requisitos centrais do checkpoint.
 
 ---
 
@@ -599,6 +581,7 @@ Projeto desenvolvido em equipe por:
 As atividades realizadas por integrante são registradas no histórico de contribuições e no GitHub.
 
 ---
+
 **ATLAS — A Maldição do Tesouro Perdido**
 
 **Nem todo tesouro deve ser encontrado. Mas todos precisam ser procurados.**
