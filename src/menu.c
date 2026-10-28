@@ -3,6 +3,8 @@
 #include "../include/difficulty.h"
 #include "../include/player.h"
 #include "../include/manual.h"
+#include "../include/treasure.h"
+#include "../include/screen.h"
 
 void runMainMenu(){
     int option, result;
@@ -11,6 +13,7 @@ void runMainMenu(){
     Player player = {0};
 
     do{
+        clearScreen();
         printf("===========================================\n");
         printf("                 A T L A S\n");
         printf("       A MALDICAO DO TESOURO PERDIDO\n");
@@ -53,6 +56,7 @@ while ((ch = getchar()) != '\n' && ch != EOF) {
             
         case 1:
             printf("Iniciando nova expedicao...\n");
+            clearScreen();
             selectedLevel = showDifficulty();
 
          if (selectedLevel == BACK) {
@@ -84,11 +88,13 @@ while ((ch = getchar()) != '\n' && ch != EOF) {
         break;
 
             case 2: 
+            clearScreen();
             printf("Inciacao de jogo Salvo em desenvolvimento\n");
             break;
 
             case 3:
-            printf("Execucao de Manual do Jogo em Desenvolvimento\n");
+            printf("Iniciando manual do Menu...\n");
+            clearScreen();
             menuManual();
             break;
 

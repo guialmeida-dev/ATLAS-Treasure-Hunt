@@ -33,3 +33,6 @@ ranking.txt
 
 # Testes locais
 /test/
+
+# Manual gerado automaticamente
+/manual.txt
