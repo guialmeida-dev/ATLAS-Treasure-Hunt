@@ -2,7 +2,7 @@
 
 **Um jogo de caça ao tesouro, estratégia e investigação desenvolvido em linguagem C.**
 
-**Documentação atualizada em 27/10/2026 — versão 0.4.**
+**Documentação atualizada em 28/10/2026 — versão 0.5.**
 
 ---
 
@@ -19,7 +19,7 @@
 | Tema | J4 — Caça ao Tesouro |
 | Linguagem | C |
 | Interface | Terminal (CLI) |
-| Versão | 0.4 — Cadastro de explorador e base do sistema de tesouros |
+| Versão | 0.5 — Terminal do Explorador e testes isolados do tabuleiro |
 | Status | Em desenvolvimento |
 
 O ATLAS é um projeto acadêmico desenvolvido por quatro estudantes de Ciência da Computação da FACAPE.
@@ -78,6 +78,7 @@ As contribuições efetivamente realizadas são registradas por etapa no histór
 | Até 26/10/2026 | Núcleo de caça ao tesouro | Desenvolvimento de `treasure.c`/`treasure.h`: distribuição e investigação de tesouros, controle de tentativas, salvamento/carregamento e primeira versão do ranking | Marcio |
 | 26/10/2026 | Cadastro do explorador | Ajustes e depuração de `player.c`/`player.h`, validação de nomes e integração do cadastro após a seleção da dificuldade no menu | Guilherme de Almeida |
 | Até 27/10/2026 | Manual do Explorador | Desenvolvimento de `manual.c`/`manual.h`: submenu, criação de arquivo de texto, abertura externa e tratamento condicional para Windows/Linux; chamada adicionada à opção 3 do menu na versão recebida | Guilherme Arthur |
+| 28/10/2026 | Interface Terminal do Explorador | Criação de `board_view.c`/`board_view.h`, tabuleiro textual em três tamanhos, painel do jogador, depuração e testes locais | Guilherme de Almeida |
 
 Novas contribuições serão incluídas conforme as entregas de cada integrante. A responsabilidade pelas implementações e revisões é compartilhada por toda a equipe.
 
@@ -96,29 +97,17 @@ Foi criada a estrutura inicial do menu principal, responsável por apresentar as
 A interface atual segue este modelo:
 
 ```text
-
-\===========================================
-
+===========================================
                  A T L A S
-
        A MALDICAO DO TESOURO PERDIDO
-
-\===========================================
-
+===========================================
          1 - Nova Expedicao
-
          2 - Continuar Expedicao
-
          3 - Manual do Explorador
-
          4 - Ranking dos Exploradores
-
          0 - Sair
-
-\===========================================
-
+===========================================
 Escolha uma opcao:
-
 ```
 
 O módulo utiliza:
@@ -156,7 +145,6 @@ O `menu.c` utiliza temporariamente uma etapa de limpeza dos caracteres restantes
 
 **Estado confirmado em 26/10/2026:** seleção da dificuldade e cadastro do explorador integrados e verificados no terminal. A opção Nova Expedição ainda não chama o laço jogável implementado em `treasure.c`.
 
-
 ### 4.3. Cadastro do explorador
 
 Os módulos `player.c` e `player.h` definem a estrutura `Player`, com nome, pontuação inicial, dificuldade, ponteiro para uma expedição futura e ponteiro `next` para uma possível lista encadeada. A função `infoPlayer()` solicita e valida o nome usando `fgets()`, rejeita nomes vazios ou compostos somente por espaços e inicializa os campos básicos.
@@ -168,6 +156,33 @@ Em 26/10/2026 foram realizados testes isolados de cadastro e validação de nome
 Os módulos `treasure.c` e `treasure.h` já incluem geração aleatória de tesouros sem posições duplicadas, coleção dinâmica de tesouros com `realloc()`, investigação de coordenadas, marcação de casas conhecidas, contagem de tentativas, verificação de vitória/derrota e exibição do tabuleiro no terminal.
 
 Também há rotinas para salvar/carregar o estado da partida em `partida.sav` e registrar/exibir pontuações em `ranking.txt`. O laço de partida é exposto por `runTreasureHunt()` e `resumeTreasureHunt()`, mas ainda não está ligado ao menu principal. A implementação deve ser considerada **base em revisão**, e não funcionalidade final validada.
+
+### 4.5. Terminal do Explorador — interface textual (Guilherme de Almeida)
+
+Em 28/10/2026, foi criado o módulo `board_view` para separar a **apresentação visual** do núcleo de regras mantido em `treasure.c`. A interface adota um tabuleiro de coordenadas inspirado em Batalha Naval e permanece totalmente textual, sem movimentação de personagem.
+
+**Arquivos:** `include/board_view.h` e `src/board_view.c`.
+
+**Funções implementadas e testadas isoladamente:**
+
+- `showBoard(const TreasureGame *game)`: desenha as letras das colunas, os números das linhas e as casas para Easy (6×6), Normal (8×8) e Hard (10×10).
+- `showExpeditionStatus(const TreasureGame *game, const Player *player)`: exibe nome do explorador, dificuldade, tesouros encontrados e tentativas disponíveis.
+
+**Simbologia apresentada ao jogador:**
+
+| Estado armazenado no `TreasureGame` | Símbolo exibido | Significado |
+|---|---|---|
+| `.` | `?` | Posição ainda não investigada |
+| `o` | `X` | Posição investigada sem tesouro |
+| `$` | `$` | Tesouro encontrado |
+
+A tradução dos símbolos ocorre apenas na exibição; os dados internos do `TreasureGame` não são alterados pelo módulo visual.
+
+**Validação:** testes locais em `test/test_board.c` exercitaram a criação de partidas, a investigação de A1, B2 e C3, a impressão dos três tamanhos e a atualização dos contadores de tesouros e tentativas. O painel foi confirmado em saída real de terminal para Easy, Normal e Hard. A pasta `test/` permanece ignorada pelo Git.
+
+**Estado:** módulo visual funcional em teste isolado. Ainda falta conectá-lo a `runTreasureHunt()` e `resumeTreasureHunt()`, validar o alinhamento final das bordas e executar testes integrados. Não existe ainda uma interface jogável completa com esse layout.
+
+---
 
 ---
 
@@ -190,21 +205,13 @@ Essas configurações foram adotadas como parâmetros iniciais do projeto e pode
 As dificuldades são representadas internamente pelo tipo:
 
 ```c
-
 typedef enum {
-
     INVALID = -1,
-
     BACK = 0,
-
     EASY = 1,
-
     NORMAL = 2,
-
     HARD = 3
-
 } difficulty;
-
 ```
 
 Essa estrutura permite identificar cada dificuldade através de constantes nomeadas.
@@ -216,21 +223,13 @@ A entrada textual fornecida pelo jogador é interpretada e convertida para uma d
 As características de cada dificuldade serão armazenadas em:
 
 ```c
-
 typedef struct {
-
     int rows;
-
     int columns;
-
     int treasures;
-
     int attempts;
-
     int compasses;
-
 } gameConfig;
-
 ```
 
 Cada campo representa uma característica da partida.
@@ -295,9 +294,11 @@ O mapa será utilizado como representação de locais investigáveis, não como 
 
 ## 7. Sistema de mapas — Implementação inicial e evolução prevista
 
-O módulo `TreasureGame`, declarado em `treasure.h`, mantém o tabuleiro conhecido pelo jogador, com dimensões definidas pela dificuldade. As posições não investigadas são representadas por `.`, as casas vazias por `o` e os tesouros encontrados por `$`.
+O módulo `TreasureGame`, declarado em `treasure.h`, mantém o estado das casas do tabuleiro conforme a dificuldade. Internamente, as posições ainda não investigadas são representadas por `.`, as casas investigadas e vazias por `o` e os tesouros encontrados por `$`.
 
-**Limitação técnica:** o tabuleiro atual usa a matriz fixa `char board[TREASURE_MAX_SIZE][TREASURE_MAX_SIZE]`, com limite de 10×10; ainda precisa ser convertido para **matriz dinâmica**, conforme o requisito do tema J4. A apresentação de terrenos e o aprimoramento visual permanecem apenas como ideias futuras. O jogador investiga coordenadas, sem movimentação de personagem.
+A nova exibição em `board_view.c` converte esses estados para `?`, `X` e `$`, respectivamente, sem revelar tesouros ocultos. O formato escolhido é uma **grade simples de coordenadas**, semelhante a Batalha Naval, com letras nas colunas e números nas linhas. A apresentação do jogador e dos contadores fica em um painel abaixo do tabuleiro, dispensando mapas decorativos complexos e mensagens redundantes por jogada.
+
+**Limitação técnica:** o tabuleiro ainda usa a matriz fixa `char board[TREASURE_MAX_SIZE][TREASURE_MAX_SIZE]`, com limite de 10×10; deverá ser convertido para **matriz dinâmica**, conforme o requisito do tema J4. O jogador investiga coordenadas, sem movimentação de personagem.
 
 ---
 
@@ -319,29 +320,24 @@ Essa será a principal proposta de funcionalidade adicional da equipe.
 
 ### 9.1. Radar de proximidade
 
-Ao investigar uma coordenada vazia, o jogador poderá receber uma informação sobre quantos tesouros existem nas oito posições vizinhas.
+Após investigar uma coordenada vazia, o jogador poderá **acionar manualmente** o Radar para consultar quantos tesouros existem nas oito posições vizinhas. A leitura não será ativada automaticamente a cada jogada.
 
 Por exemplo:
 
 ```text
-
 Coordenada investigada: C4
-
 Nenhum tesouro encontrado.
-
 RADAR:
-
 Existem 2 tesouros nas proximidades.
-
 ```
 
-A informação deverá ser calculada com base nas posições reais dos tesouros.
+A informação deverá ser calculada com base nas posições reais dos tesouros. A penalização de pontuação, se adotada, deverá ocorrer somente com o uso efetivo da ajuda, e não pela simples ativação da opção de assistência. Leituras já realizadas não deverão gerar cobrança duplicada.
 
 Os tesouros já encontrados continuarão sendo considerados na contagem, mantendo os resultados consistentes durante a partida.
 
 ### 9.2. Bússola do Explorador
 
-A bússola será um recurso de dica com quantidade limitada de utilizações.
+A bússola será um recurso opcional de dica com quantidade limitada de utilizações. Os detalhes de penalização e integração à pontuação ainda serão definidos e implementados.
 
 Sua função será fornecer informações adicionais sobre a localização aproximada de tesouros ainda ocultos.
 
@@ -359,13 +355,13 @@ Guilherme Arthur desenvolveu os módulos **`src/manual.c` e `include/manual.h`**
 
 A função `criarManual()` verifica a existência de `manual.txt` no diretório de execução e, quando ausente, cria um documento com orientações sobre objetivo, tabuleiro, coordenadas, tentativas, vitória/derrota, salvamento, ranking e dicas. A função `abrirManual()` utiliza a abertura externa do arquivo, com tratamento condicional para Windows e Linux. A função `menuManual()` oferece a interação no terminal.
 
-Na cópia recebida, a opção **[3] Manual do Explorador** em `menu.c` chama `menuManual()`. **Essa implementação foi recebida e compilada, mas sua integração à versão local principal ainda deve ser conferida antes de um commit.**
+A integração do submenu do Manual do Explorador à opção **[3]** do menu principal foi realizada e testada posteriormente, com registro em commit. A autoria de `manual.c` e `manual.h` permanece atribuída a Guilherme Arthur; os ajustes de integração foram feitos por Guilherme de Almeida.
 
 ### Ajustes identificados na revisão
 
 - Trocar chamadas recursivas de `menuManual()` por um laço de repetição.
 - Validar a entrada numérica do submenu e falhas ao criar/abrir arquivos.
-- Alinhar a explicação do tabuleiro aos símbolos e à orientação de coordenadas efetivamente usados em `treasure.c` (colunas com letras, linhas numeradas; `.`, `o` e `$`).
+- Atualizar as instruções do manual para refletir os símbolos exibidos no novo Terminal do Explorador (`?`, `X` e `$`), mantendo a distinção em relação aos estados internos de `treasure.c`.
 - Alinhar a nomenclatura do manual ao título completo do ATLAS e conferir os caminhos de arquivos.
 
 A autoria dessa implementação é atribuída a **Guilherme Arthur**, preservando o crédito original enquanto a equipe realiza a revisão e integração.
@@ -392,7 +388,7 @@ Ainda é necessário integrar a opção **Continuar Expedição** ao menu e pers
 
 ## 12. Arquitetura do projeto
 
-### 12.1. Estrutura atual dos módulos recebidos
+### 12.1. Estrutura dos módulos em desenvolvimento
 
 ```text
 ATLAS-Treasure-Hunt/
@@ -401,19 +397,23 @@ ATLAS-Treasure-Hunt/
 |   |-- difficulty.h
 |   |-- player.h
 |   |-- treasure.h
-|   `-- manual.h
+|   |-- manual.h
+|   |-- screen.h
+|   `-- board_view.h
 |-- src/
 |   |-- main.c
 |   |-- menu.c
 |   |-- difficulty.c
 |   |-- player.c
 |   |-- treasure.c
-|   `-- manual.c
+|   |-- manual.c
+|   |-- screen.c
+|   `-- board_view.c
 |-- test/                   (testes locais, ignorados pelo Git)
 `-- README.md
 ```
 
-A pasta `test/` contém testes locais e foi configurada para ser ignorada pelo Git. Os arquivos do manual constam na versão enviada por Guilherme Arthur; confirmar sua incorporação na branch principal antes do próximo commit.
+O módulo `screen` oferece a limpeza de terminal utilizada na navegação. O novo `board_view` foi testado isoladamente, mas ainda não é chamado pelo fluxo jogável principal.
 
 ### 12.2. Responsabilidades
 
@@ -425,6 +425,8 @@ A pasta `test/` contém testes locais e foi configurada para ser ignorada pelo G
 | `player.c/.h` | Validar e inicializar os dados do explorador |
 | `treasure.c/.h` | Gerar e investigar tesouros, exibir tabuleiro conhecido, salvar/carregar e registrar ranking — desenvolvimento de Marcio |
 | `manual.c/.h` | Submenu do manual, criação do arquivo de texto e abertura externa — desenvolvimento de Guilherme Arthur |
+| `screen.c/.h` | Limpeza de tela no terminal para a navegação do menu |
+| `board_view.c/.h` | Tabuleiro textual e painel de status do explorador — desenvolvimento de Guilherme de Almeida |
 
 ### 12.3. Organização futura
 
@@ -471,7 +473,7 @@ O desenvolvimento buscará compatibilidade entre Windows e Linux, utilizando pri
 
 ## 14. Limitações atuais
 
-Na versão integrada e testada em 26/10/2026, o menu principal, a seleção de dificuldade e o cadastro do explorador já funcionam juntos. O núcleo jogável, desenvolvido em módulo separado por Marcio, ainda não foi integrado ao menu.
+Até 28/10/2026, o menu, a seleção de dificuldade, o cadastro e o manual foram trabalhados no projeto; o núcleo jogável, desenvolvido por Marcio, ainda não foi integrado ao menu. O novo Terminal do Explorador foi validado isoladamente, sem substituir ainda o tabuleiro exibido por `treasure.c`.
 
 Pendências identificadas:
 
@@ -482,8 +484,10 @@ Pendências identificadas:
 - Reforçar validação do arquivo salvo e o tratamento de falhas de gravação.
 - Impedir ações pela API de investigação após vitória ou derrota.
 - Melhorar entradas inválidas, EOF, comandos e nomes acima do limite.
-- Integrar e revisar o Manual do Explorador de Guilherme Arthur na branch principal, corrigindo validação, recursão e divergências com o tabuleiro.
-- Implementar radar e bússola no estágio apropriado.
+- Revisar o Manual do Explorador de Guilherme Arthur, já integrado, corrigindo validação, recursão e divergências com os símbolos do novo tabuleiro.
+- Integrar o novo `board_view` ao fluxo de investigação e concluir os ajustes de alinhamento visual.
+- Implementar Radar manual e Bússola opcional no estágio apropriado.
+- Implementar e testar enigmas exclusivos do Hard: a resposta correta conquista o tesouro; a resposta incorreta realoca o tesouro para uma posição válida ainda não investigada, sem concedê-lo ao jogador.
 - Executar testes integrados da partida completa e registrar resultados.
 
 A documentação distingue código existente de funcionalidades efetivamente integradas e testadas.
@@ -522,21 +526,13 @@ As mensagens deverão identificar claramente as alterações realizadas.
 Exemplos:
 
 ```text
-
 chore: initialize ATLAS project structure
-
 feat: implement main menu
-
 feat: add difficulty selection
-
 fix: validate invalid menu input
-
 feat: implement dynamic board
-
 feat: add treasure generation
-
 docs: update game manual
-
 ```
 
 Cada integrante deverá configurar sua própria identidade Git.
@@ -547,19 +543,25 @@ O histórico de commits servirá como registro técnico da evolução do ATLAS e
 
 ---
 
-## 17. Próximas tarefas — Checkpoint 2 (27/10/2026)
+## 17. Próximas tarefas — Após o Checkpoint 2
 
-O Checkpoint 2 exige: **principais regras do tema funcionando; memória dinâmica integrada; maior parte das funcionalidades mínimas implementada; persistência iniciada ou funcional; interface utilizável**.
+O Checkpoint 2, com data de referência em 27/10/2026, exige: **principais regras do tema funcionando; memória dinâmica integrada; maior parte das funcionalidades mínimas implementada; persistência iniciada ou funcional; interface utilizável**.
 
 Prioridades imediatas:
 
 1. Integrar menu, dificuldade, cadastro e núcleo de caça ao tesouro.
-2. Implementar matriz dinâmica do tabuleiro, preservando a coleção dinâmica de tesouros.
-3. Demonstrar investigação por coordenadas, repetição sem custo, vitória e derrota.
-4. Conectar o carregamento/salvamento e o ranking às opções do menu.
-5. Revisar entradas, memória, falhas e executar uma demonstração de ponta a ponta.
 
-A refatoração do ranking para melhor pontuação por jogador e dificuldade permanece uma próxima tarefa, **não uma entrega já concluída**. A versão do Manual do Explorador de Guilherme Arthur já foi recebida, mas a integração definitiva e as correções ainda precisam ser verificadas. Recursos extras não devem substituir os requisitos centrais do checkpoint.
+2. Implementar matriz dinâmica do tabuleiro, preservando a coleção dinâmica de tesouros.
+
+3. Demonstrar investigação por coordenadas, repetição sem custo, vitória e derrota.
+
+4. Conectar o carregamento/salvamento e o ranking às opções do menu.
+
+5. Integrar a exibição `board_view` ao núcleo de jogo e manter os estados internos separados da representação visual.
+6. Revisar entradas, memória, falhas e executar uma demonstração de ponta a ponta.
+7. Depois de estabilizar os requisitos centrais, desenvolver e testar as pistas opcionais e a mecânica de enigmas do Hard.
+
+A refatoração do ranking para melhor pontuação por jogador e dificuldade permanece uma próxima tarefa, **não uma entrega já concluída**. A versão do Manual do Explorador de Guilherme Arthur já foi integrada ao menu; suas correções de robustez e documentação ainda precisam ser verificadas. Recursos extras não devem substituir os requisitos centrais do checkpoint.
 
 ---
 
@@ -574,8 +576,10 @@ Projeto desenvolvido em equipe por:
 - Marcio
 - Enzo
 
-**FACAPE — Ciência da Computação**  
-**Programação Avançada — 2026.2**  
+**FACAPE — Ciência da Computação**  
+
+**Programação Avançada — 2026.2**  
+
 **Professor: Thierry Araujo**
 
 As atividades realizadas por integrante são registradas no histórico de contribuições e no GitHub.
