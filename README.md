@@ -22,8 +22,6 @@ gcc -std=c11 -Wall -Wextra -Wpedantic src/*.c -o atlas.exe
 .\atlas.exe
 ```
 
-Não é necessário usar `-Iinclude`: os arquivos `.c` referenciam os cabeçalhos por caminhos relativos, como `../include/menu.h`.
-
 Para Linux, a compilação equivalente é:
 
 ```bash
