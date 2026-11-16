@@ -1,115 +1,61 @@
-#include <stdio.h> 
+#include <stdio.h>
 #include "../include/menu.h"
 #include "../include/difficulty.h"
 #include "../include/player.h"
 #include "../include/manual.h"
 #include "../include/treasure.h"
+#include "../include/input.h"
 #include "../include/screen.h"
 
-void runMainMenu(){
+// Encaminha cada opção para o módulo correspondente.
+void runMainMenu(void) {
+    char text[128];
     int option, result;
-    difficulty selectedLevel;
-    gameConfig config;
-    Player player = {0};
-
-    do{
+    while (1) {
         clearScreen();
-        printf("===========================================\n");
-        printf("                 A T L A S\n");
-        printf("       A MALDICAO DO TESOURO PERDIDO\n");
-        printf("===========================================\n");
-        printf("\n");
-        printf("         1 - Nova Expedicao\n");
-        printf("         2 - Continuar Expedicao\n");
-        printf("         3 - Manual do Explorador\n");
-        printf("         4 - Ranking dos Exploradores\n");
-        printf("         0 - Sair\n");
-        printf("\n");
-        printf("===========================================\n");
-        printf("Escolha uma opcao: ");
-     result = scanf("%d", &option);
-
-if (result != 1) {
-    int ch;
-
-    printf("ERRO: Apenas numeros sao aceitos. Digite um numero valido.\n");
-
-    // Limpa os caracteres invalidos do buffer
-    while ((ch = getchar()) != '\n' && ch != EOF) {
-    }
-
-    // Encerra se a entrada chegou ao fim
-    if (ch == EOF) {
-        break;
-    }
-
-    option = -1;
-    continue;
-}
-
-// Limpa o restante da linha apos uma leitura numerica
-int ch;
-
-while ((ch = getchar()) != '\n' && ch != EOF) {
-}
-          switch (option){
-            
-        case 1:
-            printf("Iniciando nova expedicao...\n");
-            clearScreen();
-            selectedLevel = showDifficulty();
-
-         if (selectedLevel == BACK) {
-            printf("Retornando ao Menu Principal...\n");
-        }
-        else if (selectedLevel == INVALID) {
-            printf("ERRO: Dificuldade Invalida.\n");
-        }
-        else {
-            config = getGameConf(selectedLevel);
-            printf("\n========== DEBUG GAME CONFIG ==========\n");
-            printf("Linhas: %d\n", config.rows);
-            printf("Colunas: %d\n", config.columns);
-            printf("Tesouros: %d\n", config.treasures);
-            printf("Tentativas: %d\n", config.attempts);
-            printf("Bussolas: %d\n", config.compasses);
-            printf("=======================================\n");
-
-            if (!infoPlayer(&player, selectedLevel)) {
-            printf("ERRO: Nao foi possivel cadastrar o explorador.\n");
+        printf("===========================================\n                 A T L A S\n       A MALDICAO DO TESOURO PERDIDO\n===========================================\n");
+        printf("1 - Nova Expedicao\n2 - Continuar Expedicao\n3 - Manual do Explorador\n4 - Ranking dos Exploradores\n0 - Sair\n");
+        result = readInput("Escolha uma opcao: ", text, sizeof text);
+        if (result == 0 || result == -2) {
             break;
+        }
+        if (result != 1 || !parseInteger(text, 0, 4, &option)) {
+            printf("ERRO: opcao invalida. Use um numero de 0 a 4.\n");
+            continue;
+        }
+        if (option == 0) {
+            break;
+        }
+        switch (option) {
+            case 1: {
+                Player player = {0};
+                difficulty level;
+                if (!infoPlayer(&player, INVALID)) {
+                    break;
+                }
+                do {
+                    level = showDifficulty();
+                    if (level == INVALID) {
+                        printf("ERRO: dificuldade invalida.\n");
+                    }
+                } while (level == INVALID);
+                if (level == BACK) {
+                    break;
+                }
+                player.level = level;
+                runTreasureHunt(getGameConf(level), &player);
+                break;
             }
-            printf("\n===== EXPLORADOR CADASTRADO =====\n");
-            printf("Nome: %s\n", player.name);
-            printf("Pontuacao: %d\n", player.score);
-            printf("Dificuldade: %d\n", player.level);
-            printf("================================\n");
-        }
-        break;
-
-            case 2: 
-            clearScreen();
-            printf("Inciacao de jogo Salvo em desenvolvimento\n");
-            break;
-
+            case 2:
+                resumeTreasureHunt();
+                break;
             case 3:
-            printf("Iniciando manual do Menu...\n");
-            clearScreen();
-            menuManual();
-            break;
-
+                menuManual();
+                break;
             case 4:
-            printf("Sistema de Ranking em desenvolvimento\n");
-            break;
-
-            case 0:
-            printf("Encerrando o Programa...\n");
-            break;
-
-            default:
-            printf("ERRO: Opcao invalida.\n");
-            break;
+                showRanking();
+                break;
         }
-    } while (option != 0);
-
+    }
+    printf("Encerrando o programa. Ate a proxima expedicao!\n");
 }

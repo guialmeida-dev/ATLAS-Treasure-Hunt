@@ -1,28 +1,14 @@
 #ifndef DIFFICULTY_H
 #define DIFFICULTY_H
 
-//Tipos de Dificuldade
-typedef enum {
-    INVALID = -1,
-    BACK = 0,
-    EASY = 1,
-    NORMAL = 2,
-    HARD = 3
-} difficulty;
-
-// Configurações de cada Dificuldade
+typedef enum { INVALID = -1, BACK = 0, EASY = 1, NORMAL = 2, HARD = 3 } difficulty;
 typedef struct {
-    int rows;
-    int columns;
-    int treasures; // Tesouros 
-    int attempts; // Tentativas
-    int compasses;
+    int rows, columns, treasures, attempts, compasses;
 } gameConfig;
 
-// Funções do sistema de Dificuldade
-
-difficulty showDifficulty(); //Imprime o menu de Dificuldades no Terminal
-difficulty difficultyLevel(char data[]); //Responsavel por receber e validar a entrada
-gameConfig getGameConf(difficulty level); //Recebe a dificuldade e retorna e estrutura contendo as configurações
+difficulty showDifficulty(void);
+difficulty difficultyLevel(char data[]);
+gameConfig getGameConf(difficulty level);
+const char *difficultyName(difficulty level);
 
 #endif

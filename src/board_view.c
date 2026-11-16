@@ -1,90 +1,55 @@
+// Interface original de Guilherme de Almeida, ligada ao estado da partida.
 #include <stdio.h>
 #include "../include/board_view.h"
 
+// Mostra somente as casas que o jogador já conhece.
 void showBoard(const TreasureGame *game) {
-
-    if (game == NULL) {
-        printf("ERRO: Tabuleiro indisponivel.\n");
+    GameStatus status;
+    if (!getGameStatus(game, &status)) {
+        printf("Tabuleiro indisponivel.\n");
         return;
     }
-    // Cabecalho das colunas
-  printf("\n     ");
 
-    for (int col = 0; col < game->columns; col++) {
-    printf("  %c", 'A' + col);
+    printf("\n     ");
+    for (int column = 0; column < status.columns; column++) {
+        printf(" %c ", 'A' + column);
     }
-    printf("\n");
-    // Borda superior
-    printf("    +");
-
-    for (int col = 0; col < game->columns; col++) {
-    printf("---");
-    }
-    printf("--+\n");
-    // Linhas e colunas
-   for (int row = 0; row < game->rows; row++) {
-        printf("%2d  |", row + 1);
-
-    for (int col = 0; col < game->columns; col++) {
-
-    char cell = game->board[row][col];
-
-    if (cell == '.') {
-        cell = '?';
-    }
-    else if (cell == 'o') {
-        cell = 'X';
-    }
-    printf(" %c ", cell);
-}
-printf("|\n");
-}
-    // Borda inferior
-    printf("    +");
-
-    for (int col = 0; col < game->columns; col++) {
+    printf("\n    +");
+    for (int column = 0; column < status.columns; column++) {
         printf("---");
     }
-    printf("--+\n");
+    printf("+\n");
+
+    for (int row = 0; row < status.rows; row++) {
+        printf("%2d  |", row + 1);
+        for (int column = 0; column < status.columns; column++) {
+            char cell = getKnownCell(game, row, column);
+            if (cell == '.') {
+                cell = '?';
+            } else if (cell == 'o') {
+                cell = 'X';
+            }
+            printf(" %c ", cell);
+        }
+        printf("|\n");
+    }
+    printf("    +");
+    for (int column = 0; column < status.columns; column++) {
+        printf("---");
+    }
+    printf("+\n? oculto | X vazio | $ tesouro | ! enigma pendente\n");
 }
 
-void showExpeditionStatus(const TreasureGame *game, const Player *player){
-        if (game == NULL || player == NULL){
-            printf("ERRO: Informacoes da expedicao indisponiveis\n");
-            return;
-        }
-
-        printf("\n----------------------------------------\n");
-
-        printf(" EXPLORADOR: %s\n", player->name);
-
-        const char *levelName = "DESCONHECIDA";
-
-        switch (player -> level){
-            case EASY:
-            levelName = "EASY";
-            break;
-
-            case NORMAL:
-            levelName = "NORMAL";
-            break;
-
-            case HARD:
-            levelName = "HARD";
-            break;
-            
-            default:
-            break;
-        }
-
-        printf(" DIFICULDADE: %s\n", levelName);
-
-        printf(" TESOUROS: %d/%d\n", game->foundCount, game->treasureCount);
-
-        printf(" TENTATIVAS: %d/%d\n", game->attemptsLeft, game->maxAttempts);
-
-        printf("\n----------------------------------------\n");
+void showExpeditionStatus(const TreasureGame *game) {
+    GameStatus status;
+    if (!getGameStatus(game, &status)) {
+        return;
+    }
+    printf("EXPLORADOR: %s | %s | Mapa: %dx%d\n", status.player.name,
+           difficultyName(status.player.level), status.rows, status.columns);
+    printf("TESOUROS: %d/%d | TENTATIVAS: %d/%d | PONTOS: %d\n",
+           status.foundCount, status.treasureCount, status.attemptsLeft,
+           status.maxAttempts, status.player.score);
+    printf("RADAR: %d/%d | BUSSOLA: %d\n",
+           RADAR_LIMIT - status.radarUsed, RADAR_LIMIT, status.compassesLeft);
 }
-
-/*Falta a integração entre o board_view.c e o treasure.c, para substituir 
-a exibição antiga pelo novo tabuleiro durante uma partida real.*/ 

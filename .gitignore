@@ -1,38 +1,26 @@
-# Executaveis e arquivos compilados
+# Compilacao e resultados locais
 *.exe
 *.o
 *.obj
 *.out
-
-# Pastas de compilacao
-build/
-bin/
-
-# Arquivos temporarios
+/build/
+/bin/
 *.log
 *.tmp
-
-# Configuracoes locais do VS Code
+*.bak
 .vscode/
-
-# Salvamentos e rankings locais
-data/saves/
-data/ranking.txt
-partida.sav
-ranking.txt
-*.exe
-
-# Arquivos de compilacao
-*.exe
-*.o
-*.obj
-
-# Arquivos de persistencia local
+# Dados de jogadores (nao versionar)
+/data/saves/
+/data/ranking.txt
+/partida.sav
+/ranking.txt
 *.sav
-ranking.txt
+__pycache__/
 
-# Testes locais
-/test/
+# Arquivos de salvamento e ranking
+*.sav
+ranking.dat
 
-# Manual gerado automaticamente
-/manual.txt
+# Arquivos do sistema
+.DS_Store
+Thumbs.db

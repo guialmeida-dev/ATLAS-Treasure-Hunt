@@ -1,0 +1,46 @@
+ATLAS - A MALDICAO DO TESOURO PERDIDO
+J4 - Caca ao Tesouro | FACAPE | Programacao Avancada 2026.2
+
+1. Nova Expedicao: informe nome, escolha Easy, Normal ou Hard.
+Easy: 6x6, 3 tesouros, 30 tentativas, 3 bussolas.
+Normal: 8x8, 5 tesouros, 45 tentativas, 2 bussolas.
+Hard: 10x10, 7 tesouros, 60 tentativas, 1 bussola.
+
+2. Coordenadas: letras nas COLUNAS, numeros nas LINHAS. B3 = coluna B, linha 3.
+? oculto | X explorado vazio | $ tesouro encontrado.
+Cada coordenada nova valida gasta uma tentativa, com ou sem tesouro.
+Coordenadas invalidas ou repetidas nao gastam tentativas.
+Encontre todos os tesouros ate a ultima tentativa para vencer.
+
+3. Comandos durante a expedicao:
+B3          investigar uma coordenada (tambem aceita b3).
+radar B3    consultar as 8 casas vizinhas de uma casa vazia ja investigada.
+            Conta TODOS os tesouros, incluindo os ja encontrados.
+            Limite: 3 casas diferentes por partida; repetir nao gasta carga.
+            A leitura e atualizada se um tesouro for realocado no Hard.
+bussola B3  indicar direcao do tesouro oculto mais proximo de B3.
+            Distancia Manhattan; empate por linha e depois coluna.
+            Pode usar qualquer coordenada valida; consome uma bussola.
+            Cargas por dificuldade: 3 / 2 / 1.
+salvar      gravar em partida.sav; outro save exige confirmacao.
+sair        retornar ao menu com opcao de salvar.
+ajuda       exibir comandos.
+
+4. Hard: encontrar um tesouro apresenta um enigma aritmetico.
+Resposta correta conquista o tesouro. Resposta incorreta marca a casa vazia
+e realoca o tesouro para uma casa oculta livre, sem conceder pontos.
+A tentativa e gasta uma unica vez. EOF durante o enigma conta como erro.
+
+5. Pontos: 100 por tesouro; vitoria soma 10 por tentativa restante.
+Radar e bussola nao descontam pontos. Ranking separado por dificuldade,
+mantendo o melhor resultado por nome exato (diferencia maiusculas).
+Empate: vitoria, menos tentativas, nome; mesma partida nao e registrada duas vezes.
+
+6. Continuar Expedicao restaura nome, mapa, recursos e progresso.
+Ha um slot de save. Encerrar outra partida nao apaga esse slot.
+O formato antigo numerico nao e carregado; preserve-o antes de substitui-lo.
+EOF sai sem salvar automaticamente. Salve antes de encerrar a entrada.
+Em falha de arquivo, a mensagem informa o erro e o arquivo anterior e preservado.
+Arquivos .tmp/.bak apos interrupcao exigem recuperacao descrita no README.
+
+Equipe: Guilherme de Almeida, Guilherme Arthur, Marcio e Enzo.

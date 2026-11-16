@@ -1,67 +1,53 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "../include/difficulty.h"
+#include "../include/input.h"
 
-#define MAX 100
+// Mostra as dificuldades e lê uma escolha completa.
+difficulty showDifficulty(void) {
+    char data[100];
+    int result;
 
-// Exibição e Leitura da Dificuldade
-difficulty showDifficulty() {
-    char data[MAX];
-
-    // Limpar o terminal (implementaremos futuramente)
-
-    // Exibindo as dificuldades
     printf("\n========== DIFFICULTY ==========\n");
-    printf("\n[1] Easy\n");
-    printf("\n[2] Normal\n");
-    printf("\n[3] Hard\n");
-    printf("\n[0] Back\n");
-    printf("\n===============================\n");
+    printf("[1] Easy\n[2] Normal\n[3] Hard\n[0] Back\n");
+    printf("===============================\n");
+    result = readInput("Selecione a dificuldade desejada: ", data, sizeof data);
 
-    printf("\nAlert: Esta secao aceita numeros e caracteres.\n");
-    printf("Selecione a dificuldade desejada: ");
-
-    // Captura a entrada do jogador
-    if (fgets(data, sizeof(data), stdin) == NULL) {
-        printf("ERRO: Falha ao ler a entrada.\n");
+    if (result == 0 || result == -2) {
+        return BACK;
+    }
+    if (result != 1) {
         return INVALID;
     }
-
-    // Envia a entrada para validacao e retorna o resultado
+    trimText(data);
     return difficultyLevel(data);
 }
 
-difficulty difficultyLevel(char data[]){
-
-    //Remoção da quebra de linha criada pelo Enter
+// Aceita o número ou o nome da dificuldade, sem diferenciar maiúsculas.
+difficulty difficultyLevel(char data[]) {
     data[strcspn(data, "\n")] = '\0';
-
-    //Converção dos caracteres digitados em Minusculos 
-    for (int i = 0; data[i] != '\0'; i++){
+    for (int i = 0; data[i] != '\0'; i++) {
         data[i] = (char)tolower((unsigned char)data[i]);
     }
-    
-    //Identificação da dificuldade utilizando ternarios
-    difficulty level =
 
-        (strcmp(data, "easy") == 0 || strcmp(data, "1") == 0) ? EASY :
-        (strcmp(data, "normal") == 0 || strcmp(data, "2") == 0) ? NORMAL :
-        (strcmp(data, "hard") == 0 || strcmp(data, "3") == 0) ? HARD :
-        (strcmp(data, "back") == 0 || strcmp(data, "0") == 0) ? BACK : INVALID;
-
-     return level;
+    if (strcmp(data, "easy") == 0 || strcmp(data, "1") == 0) {
+        return EASY;
+    } else if (strcmp(data, "normal") == 0 || strcmp(data, "2") == 0) {
+        return NORMAL;
+    } else if (strcmp(data, "hard") == 0 || strcmp(data, "3") == 0) {
+        return HARD;
+    } else if (strcmp(data, "back") == 0 || strcmp(data, "0") == 0) {
+        return BACK;
+    }
+    return INVALID;
 }
 
-//Implementação das configurações de mapa de acordo com a dificuldade:
-
-gameConfig getGameConf(difficulty level){
-
+// Mantém os parâmetros escolhidos pelo grupo para cada dificuldade.
+gameConfig getGameConf(difficulty level) {
     gameConfig config = {0};
-    
-    switch (level) {
 
+    switch (level) {
         case EASY:
             config.rows = 6;
             config.columns = 6;
@@ -69,7 +55,6 @@ gameConfig getGameConf(difficulty level){
             config.attempts = 30;
             config.compasses = 3;
             break;
-
         case NORMAL:
             config.rows = 8;
             config.columns = 8;
@@ -77,7 +62,6 @@ gameConfig getGameConf(difficulty level){
             config.attempts = 45;
             config.compasses = 2;
             break;
-
         case HARD:
             config.rows = 10;
             config.columns = 10;
@@ -85,15 +69,22 @@ gameConfig getGameConf(difficulty level){
             config.attempts = 60;
             config.compasses = 1;
             break;
-
         default:
-            printf("ERRO! ERRO!");
-            config.rows = 0;
-            config.columns = 0;
-            config.treasures = 0;
-            config.attempts = 0;
-            config.compasses = 0;
+            printf("ERRO: dificuldade invalida.\n");
             break;
     }
     return config;
+}
+
+const char *difficultyName(difficulty level) {
+    switch (level) {
+        case EASY:
+            return "Easy";
+        case NORMAL:
+            return "Normal";
+        case HARD:
+            return "Hard";
+        default:
+            return "Desconhecida";
+    }
 }

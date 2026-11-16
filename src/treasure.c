@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
-#include "../include/treasure.h"
+#include "treasure.h"
 
 #define SAVE_FILE     "partida.sav"
 #define RANKING_FILE  "ranking.txt"
@@ -324,8 +324,7 @@ static int parseCoordinate(const char *text, int *row, int *column)
     return 1;
 }
 
-static void finishGame(TreasureGame *game)
-{
+static void finishGame(TreasureGame *game, Player *player){
     TreasureState state = getTreasureState(game);
     char name[NAME_MAX_LEN];
 
@@ -352,8 +351,7 @@ static void finishGame(TreasureGame *game)
     showRanking();
 }
 
-static void playGame(TreasureGame *game)
-{
+static void playGame(TreasureGame *game, Player *player){
     char input[64];
 
     printf("\nDigite uma coordenada (ex.: B3), 'salvar' ou 'sair'.\n");
@@ -397,11 +395,10 @@ static void playGame(TreasureGame *game)
         }
     }
     showKnownBoard(game);
-    finishGame(game);
+    finishGame(game, player);
 }
 
-void runTreasureHunt(gameConfig config)
-{
+void runTreasureHunt(gameConfig config, Player *player){
     TreasureGame game;
     if (!startTreasureGame(&game, config)) {
         printf("Erro ao iniciar a partida.\n");

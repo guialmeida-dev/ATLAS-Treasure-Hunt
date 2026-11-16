@@ -1,58 +1,42 @@
 #ifndef TREASURE_H
 #define TREASURE_H
-
+#include <stddef.h>
 #include "difficulty.h"
-
+#include "player.h"
 #define TREASURE_MAX_SIZE 10
+#define RADAR_LIMIT 3
+// Os dados internos ficam em treasure.c; aqui estão as operações da partida.
+typedef struct TreasureGame TreasureGame;
 
-// Um tesouro guardado na coleção dinâmica (separada do tabuleiro)
 typedef struct {
-    int row;
-    int column;
-    int found;      // 0 = oculto, 1 = encontrado
-} Treasure;
-
-// Estado completo de uma partida
-typedef struct {
-    int rows;
-    int columns;
-    int maxAttempts;
-    int attemptsLeft;
-    char board[TREASURE_MAX_SIZE][TREASURE_MAX_SIZE]; // Somente o que o jogador já sabe
-    Treasure *treasures;                              // Coleção dinâmica de tesouros
-    int treasureCount;
-    int treasureCapacity;
-    int foundCount;
-} TreasureGame;
+    int rows, columns, maxAttempts, attemptsLeft, treasureCount, foundCount;
+    int compassesLeft, radarUsed;
+    Player player;
+} GameStatus;
 
 typedef enum {
-    INVESTIGATE_INVALID,    // Coordenada fora do tabuleiro
-    INVESTIGATE_REPEATED,   // Já investigada (não consome tentativa)
-    INVESTIGATE_EMPTY,      // Nada encontrado
-    INVESTIGATE_TREASURE    // Tesouro encontrado
+    INVESTIGATE_INVALID, INVESTIGATE_REPEATED, INVESTIGATE_EMPTY,
+    INVESTIGATE_TREASURE, INVESTIGATE_CHALLENGE, INVESTIGATE_ENDED
 } InvestigateResult;
 
-typedef enum {
-    TREASURE_RUNNING,
-    TREASURE_WON,
-    TREASURE_LOST
-} TreasureState;
-
-// Funções do sistema de Caça ao Tesouro
-
-int startTreasureGame(TreasureGame *game, gameConfig config); // Gera o tabuleiro e sorteia os tesouros. Retorna 1 se deu certo
-void freeTreasureGame(TreasureGame *game);                    // Libera a memória da coleção de tesouros
-InvestigateResult investigateCoordinate(TreasureGame *game, int row, int column); // Investiga uma coordenada (índices a partir de 0)
-TreasureState getTreasureState(const TreasureGame *game);     // Informa se a partida está em andamento, vencida ou perdida
-void showKnownBoard(const TreasureGame *game);                // Imprime o estado conhecido pelo jogador
-
-int saveTreasureGame(const TreasureGame *game, const char *fileName); // Salva a partida em arquivo
-int loadTreasureGame(TreasureGame *game, const char *fileName);       // Carrega e valida uma partida salva
-
-void registerRanking(const char *name, const TreasureGame *game, int won); // Registra um resultado no ranking
-void showRanking();                                                        // Imprime o ranking
-
-void runTreasureHunt(gameConfig config); // Joga uma nova partida completa no terminal
-void resumeTreasureHunt();               // Retoma a partida salva, se existir
+typedef enum { TREASURE_RUNNING, TREASURE_WON, TREASURE_LOST } TreasureState;
+TreasureGame *startTreasureGame(gameConfig config, const Player *player);
+void freeTreasureGame(TreasureGame *game);
+int getGameStatus(const TreasureGame *game, GameStatus *status);
+char getKnownCell(const TreasureGame *game, int row, int column);
+InvestigateResult investigateCoordinate(TreasureGame *game, int row, int column);
+TreasureState getTreasureState(const TreasureGame *game);
+int parseCoordinate(const char *text, int *row, int *column);
+const char *getEnigmaQuestion(const TreasureGame *game);
+int resolveEnigma(TreasureGame *game, const char *answer);
+// Conta os tesouros vizinhos, incluindo encontrados, sem cobrar pela repetição.
+int useRadar(TreasureGame *game, int row, int column, int *count);
+int useCompass(TreasureGame *game, int row, int column, char *direction, size_t size);
+int saveTreasureGame(const TreasureGame *game, const char *fileName);
+TreasureGame *loadTreasureGame(const char *fileName);
+int registerRanking(const TreasureGame *game);
+void showRanking(void);
+void runTreasureHunt(gameConfig config, const Player *player);
+void resumeTreasureHunt(void);
 
 #endif
