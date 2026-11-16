@@ -4,7 +4,8 @@ Jogo de caça ao tesouro em **C11**, executado no terminal.
 
 **FACAPE — Ciência da Computação — Programação Avançada 2026.2**
 
-Professor: Thierry Araujo. Tema: **J4 — Caça ao Tesouro**.
+Professor: Thierry Araujo. 
+Tema: **J4 — Caça ao Tesouro**.
 
 ## 1. Objetivo
 
