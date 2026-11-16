@@ -171,7 +171,6 @@ src/       código do jogo
 test/      testes escritos em C
 README.md
 manual.txt
-build/     executáveis de teste e evidências locais
 ```
 
 `input` evita repetir a leitura e a validação nos menus. `storage` reúne as verificações usadas para salvar partidas, ranking e manual. Esses módulos foram mantidos porque ajudam a organizar o código.
